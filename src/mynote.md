@@ -11,3 +11,6 @@
 <div style="background: #F0ECE5">
 <br>
 </div>
+<br>
+
+<code> npx tailwindcss -i ./src/index.css -o ./dist/output.css --watch </code>

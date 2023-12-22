@@ -22,10 +22,8 @@ const usePokemonData = () => {
             const response = await axios.get<PokemonApiResponse>(url);
             setData(prevData => [...prevData, ...response.data.results]);
 
-            // Check if there's a next page, and if so, fetch it
-            console.log()
             if (response.data.next) {
-                await fetchData(response.data.next); // Recursive call
+                await fetchData(response.data.next);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
