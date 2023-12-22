@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {SubmitHandler, useForm, Controller} from "react-hook-form";
+import Selector from "../components/Selector";
 
 type UserValues = {
     firstName: string
@@ -7,8 +8,7 @@ type UserValues = {
 }
 
 export default function HomePage() {
-
-    const [logged, setLogged] = useState(false)
+    const [logged, setLogged] = useState(true)
     const {
         control,
         handleSubmit,
@@ -42,12 +42,13 @@ export default function HomePage() {
                     History:
                 </h2>
             </div>}
-
             {/* right part to create team */}
             <div className="w-full px-4 h-screen bg-quaternary flex items-center justify-center ">
                 {logged ?
                     <div>
+                        <Selector>
 
+                        </Selector>
                     </div> :
                     <div className="grid grid-cols-1 gap-5 ">
                         <h3 className="text-primary text-center font-semibold text-xl">
