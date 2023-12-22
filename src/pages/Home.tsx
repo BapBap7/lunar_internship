@@ -8,7 +8,7 @@ type UserValues = {
 }
 
 export default function HomePage() {
-    const [logged, setLogged] = useState(true)
+    const [logged, setLogged] = useState(false)
     const {
         control,
         handleSubmit,
@@ -46,9 +46,7 @@ export default function HomePage() {
             <div className="w-full px-4 h-screen bg-quaternary flex items-center justify-center ">
                 {logged ?
                     <div>
-                        <Selector>
-
-                        </Selector>
+                        <Selector />
                     </div> :
                     <div className="grid grid-cols-1 gap-5 ">
                         <h3 className="text-primary text-center font-semibold text-xl">

@@ -1,27 +1,29 @@
-import usePokemonData from "../api/apiService";
-
+import React, {useState} from "react";
+import usePokemonData from "../api/apiService"; // Update the import path as necessary
 
 const Selector = () => {
-    const data = usePokemonData()
-    console.log(data)
+    const {data, isLoading} = usePokemonData();
+    const [first, setFirst] = useState(false)
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
-        <div>
-            {data !== null ? (
-                <ul>
-                    {/* Check if data is an object and has the 'results' property */}
-                    {data && 'results' in data && Array.isArray(data.results) ? (
-                        data.results.map((pokemon : object) => (
-                            <li key={pokemon.name}>{pokemon.name}</li>
-                        ))
-                    ) : (
-                        <div>Loading...</div>
-                    )}
-                </ul>
-            ) : (
-                <div>Loading...</div>
-            )}
+        <div className="max-w-full min-w-60 relative">
+            <div onClick={() => {
+                setFirst(!first)
+            }}>
+                Selector
+            </div>
+            {first && <ul className=" max-h-48 overflow-y-auto">
+                {data.map((pokemon) => (
+                    <li key={pokemon.name}>{pokemon.name}</li>
+                ))}
+            </ul>}
+
         </div>
-    )
-}
+    );
+};
 
 export default Selector;
