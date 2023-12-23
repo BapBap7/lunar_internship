@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import {usePokemonData} from "../api/apiService";
-import { Control, Controller } from 'react-hook-form';
+import { usePokemonData } from "../api/apiService";
+import { Control, Controller } from "react-hook-form";
 
 interface Props {
     control: Control<any>;
@@ -14,10 +14,22 @@ interface Props {
     };
 }
 
-const Selector = ({ control, name, selectedPokemons, onSelectPokemon, counter, field }: Props) => {
+const Selector = ({
+                      control,
+                      name,
+                      selectedPokemons,
+                      onSelectPokemon,
+                      counter,
+                      field,
+                  }: Props) => {
     const { data, isLoading } = usePokemonData();
     const [isOpen, setIsOpen] = useState(false);
-
+    const [searchQuery, setSearchQuery] = useState("");
+    const filteredData = data.filter(
+        (pokemon) =>
+            !selectedPokemons.includes(pokemon.name) &&
+            pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -32,9 +44,18 @@ const Selector = ({ control, name, selectedPokemons, onSelectPokemon, counter, f
                     <div className="p-2 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
                         {value || "Pick a " + counter}
                     </div>
+
                     {isOpen && (
-                        <ul className="bg-scroll mt-1 max-h-48 overflow-y-auto absolute bg-white list-none rounded">
-                            {data.filter(pokemon => !selectedPokemons.includes(pokemon.name)).map(pokemon => (
+                        <>
+                        <input
+                            type="text"
+                            className="p-2 border-b border-gray-300 focus:outline-none focus:border-primary"
+                            placeholder="Search"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <ul className="bg-scroll mt-1 max-h-48 min-w-full overflow-y-auto absolute bg-white list-none rounded">
+                            {filteredData.map((pokemon) => (
                                 <li
                                     className="mb-2 last-of-type:mb-0 hover:bg-tertiary p-2 cursor-pointer"
                                     key={pokemon.name}
@@ -49,12 +70,12 @@ const Selector = ({ control, name, selectedPokemons, onSelectPokemon, counter, f
                                 </li>
                             ))}
                         </ul>
+                        </>
                     )}
                 </div>
             )}
         />
     );
 };
-
 
 export default Selector;

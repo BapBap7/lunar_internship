@@ -10,7 +10,7 @@ interface PokemonApiResponse {
     next: string | null;
 }
 
-const API = 'https://pokeapi.co/api/v2/pokemon';
+const API = 'https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0';
 
 
 
@@ -22,11 +22,7 @@ const usePokemonData = () => {
         setIsLoading(true);
         try {
             const response = await axios.get<PokemonApiResponse>(url);
-            setData(prevData => [...prevData, ...response.data.results]);
-
-            if (response.data.next) {
-                await fetchData(response.data.next);
-            }
+            setData(response.data.results)
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
