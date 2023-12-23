@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import usePokemonData from "../api/apiService";
+import {usePokemonData} from "../api/apiService";
 import { Control, Controller } from 'react-hook-form';
 
 interface Props {
@@ -8,9 +8,13 @@ interface Props {
     selectedPokemons: string[];
     onSelectPokemon: (name: string) => void;
     counter: string;
+    field: {
+        onChange: (value: string) => void;
+        value: string;
+    };
 }
 
-const Selector = ({ control, name, selectedPokemons, onSelectPokemon, counter }: Props) => {
+const Selector = ({ control, name, selectedPokemons, onSelectPokemon, counter, field }: Props) => {
     const { data, isLoading } = usePokemonData();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -37,6 +41,7 @@ const Selector = ({ control, name, selectedPokemons, onSelectPokemon, counter }:
                                     onClick={() => {
                                         onChange(pokemon.name);
                                         onSelectPokemon(pokemon.name);
+                                        field.onChange(pokemon.name);
                                         setIsOpen(false);
                                     }}
                                 >

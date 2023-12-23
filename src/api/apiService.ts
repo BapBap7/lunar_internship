@@ -12,6 +12,8 @@ interface PokemonApiResponse {
 
 const API = 'https://pokeapi.co/api/v2/pokemon';
 
+
+
 const usePokemonData = () => {
     const [data, setData] = useState<Pokemon[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,4 +41,28 @@ const usePokemonData = () => {
     return { data, isLoading };
 };
 
-export default usePokemonData;
+
+const fetchPokemonDetails = async (pokemonName : string) => {
+    try {
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching pokemon details:', error);
+        throw error; // Re-throw the error so you can handle it in the calling function
+    }
+};
+
+const loadSprite = async (pokemonName: string) => {
+    try{
+        const pokemonData = await fetchPokemonDetails(pokemonName);
+        const response = await axios.get(pokemonData.sprites.front_default, { responseType: 'blob' });
+        const imageBlob = response.data;
+        const imageUrl = URL.createObjectURL(imageBlob);
+        console.log(imageUrl)
+        return imageUrl;
+    } catch (error){
+        console.log(error)
+    }
+};
+
+export {usePokemonData, fetchPokemonDetails, loadSprite};
