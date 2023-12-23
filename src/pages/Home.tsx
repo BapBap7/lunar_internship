@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import {SubmitHandler, useForm, Controller} from "react-hook-form";
 import Selector from "../components/Selector";
 import UserForm from "../components/UserForm";
@@ -8,8 +8,22 @@ type UserValues = {
     lastName: string
 }
 
+type PokemonValues = {
+    teamName: string
+    pokemon1: string
+    pokemon2: string
+    pokemon3: string
+    pokemon4: string
+}
+
 export default function HomePage() {
     const [logged, setLogged] = useState(false)
+    const [userData, setUserData] = useState({
+        firstName: "",
+        lastName: ""
+    })
+    const [selectedPokemons, setSelectedPokemons] = useState<string[]>([]);
+
 
     const handleUserFormSubmit: SubmitHandler<UserValues> = (data) => {
         setLogged(true)
@@ -17,9 +31,8 @@ export default function HomePage() {
             firstName: data.firstName,
             lastName: data.lastName
         })
-    };
 
-    const [selectedPokemons, setSelectedPokemons] = useState<string[]>([]);
+    };
 
     // Function to update selected Pokémon
     const updateSelectedPokemon = (index: number, name: string) => {
@@ -30,10 +43,26 @@ export default function HomePage() {
         });
     };
 
-    const [userData, setUserData] = useState({
-        firstName: "",
-        lastName: ""
-    })
+    const onSubmit = (data: PokemonValues) => {
+        console.log(data); // Here you can handle the submitted data
+        // setTeamName, updateSelectedPokemon, or other state updates can be handled here
+    };
+
+    const {
+        control,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<PokemonValues>(
+        {
+            defaultValues: {
+                teamName: '',
+                pokemon1: '',
+                pokemon2: '',
+                pokemon3: '',
+                pokemon4: '',
+            }
+        }
+    );
 
     return (
         <div className="flex">
@@ -49,18 +78,94 @@ export default function HomePage() {
             {/* right part to create team */}
             <div className="w-full px-4 h-screen bg-quaternary flex items-center justify-center ">
                 {logged ?
-                    <section className="grid grid-cols-2 gap-10 gap-y-52">
-                        {[...Array(4)].map((_, index) => (
-                            <div key={index}>
-                                <label className="text-xs">{`Pokemon ${index + 1}`}</label>
-                                <Selector
-                                    counter={`pokemon #${index + 1}`}
-                                    selectedPokemons={selectedPokemons}
-                                    onSelectPokemon={(name) => updateSelectedPokemon(index, name)}
-                                />
-                            </div>
-                        ))}
-                    </section> :
+                    <form className="grid grid-cols-2 gap-5" onSubmit={handleSubmit(onSubmit)}>
+                        <div className="col-span-2">
+                            <Controller
+                                control={control}
+                                name="teamName"
+                                render={({ field }) => (
+                                    <input
+                                        {...field}
+                                        type="text"
+                                        placeholder="Team Name"
+                                        className="mb-4 w-full p-2 rounded"
+                                    />
+                                )}
+                            />
+                            {errors.teamName && <span>Team name is required</span>}
+                        </div>
+                        {/* Similar Controller wrapping for each Selector */}
+                        <div className="mb-48">
+                            <label className="text-xs">Pokemon 1</label>
+                            <Controller
+                                control={control}
+                                name="pokemon1"
+                                render={() => (
+                                    <Selector
+                                        control={control}
+                                        name="pokemon1"
+                                        selectedPokemons={selectedPokemons}
+                                        onSelectPokemon={(name) => updateSelectedPokemon(0, name)}
+                                        counter="1"
+                                    />
+                                )}
+                            />
+                        </div>
+                        <div className="mb-48">
+                            <label className="text-xs">Pokemon 1</label>
+                            <Controller
+                                control={control}
+                                name="pokemon2"
+                                render={() => (
+                                    <Selector
+                                        control={control}
+                                        name="pokemon2"
+                                        selectedPokemons={selectedPokemons}
+                                        onSelectPokemon={(name) => updateSelectedPokemon(1, name)}
+                                        counter="2"
+                                    />
+                                )}
+                            />
+                        </div>
+                        <div className="mb-48">
+                            <label className="text-xs">Pokemon 1</label>
+                            <Controller
+                                control={control}
+                                name="pokemon3"
+                                render={() => (
+                                    <Selector
+                                        control={control}
+                                        name="pokemon3"
+                                        selectedPokemons={selectedPokemons}
+                                        onSelectPokemon={(name) => updateSelectedPokemon(2, name)}
+                                        counter="3"
+                                    />
+                                )}
+                            />
+                        </div>
+                        <div className="mb-48">
+                            <label className="text-xs">Pokemon 1</label>
+                            <Controller
+                                control={control}
+                                name="pokemon4"
+                                render={() => (
+                                    <Selector
+                                        control={control}
+                                        name="pokemon4"
+                                        selectedPokemons={selectedPokemons}
+                                        onSelectPokemon={(name) => updateSelectedPokemon(3, name)}
+                                        counter="4"
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <button type="submit" className="w-full bg-primary text-tertiary rounded-md p-2 hover:bg-secondary transition duration-300 delay-50">
+                                Create team
+                            </button>
+                        </div>
+                    </form> :
                     <div className="grid grid-cols-1 gap-5 ">
                         <h3 className="text-primary text-center font-semibold text-xl">
                             Please enter your name and surname
