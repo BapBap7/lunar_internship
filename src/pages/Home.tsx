@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from "react";
-import {SubmitHandler, useForm, Controller} from "react-hook-form";
-import Selector from "../components/Selector";
+import React, {useState} from "react";
+import {SubmitHandler, useForm} from "react-hook-form";
+import PokeForm from "../components/PokemonForm";
 import UserForm from "../components/UserForm";
-import {fetchPokemonDetails, loadSprite} from "../api/apiService";
+import { loadSprite} from "../api/apiService";
 
 type UserValues = {
     firstName: string
@@ -15,15 +15,6 @@ type PokemonValues = {
     pokemon2: string
     pokemon3: string
     pokemon4: string
-}
-
-type HistoryValues = {
-    teamName: {
-        pokemon1: string;
-        pokemon2: string;
-        pokemon3: string;
-        pokemon4: string;
-    }
 }
 
 type Team = {
@@ -43,8 +34,6 @@ export default function HomePage() {
 
     const [teams, setTeams] = useState<TeamsArray>([])
 
-    const [pokemonSprites, setPokemonSprites] = useState<Record<string, string>>({});
-
     const handleUserFormSubmit: SubmitHandler<UserValues> = (data) => {
         setLogged(true)
         setUserData({
@@ -63,6 +52,7 @@ export default function HomePage() {
         });
     };
 
+
     const onSubmit = (data: PokemonValues) => {
         const newTeam: Team = {
             name: data.teamName,
@@ -70,13 +60,17 @@ export default function HomePage() {
         };
         setTeams(prevTeams => [...prevTeams, newTeam]);
 
-        // Fetch sprites for all pokemons in the new team
+        // Fetch sprites for all Pokémon in the new team
         newTeam.pokemons.forEach(pokemon => {
-            loadSprite(pokemon).then(data => {
-                setPoke(prev => ({ ...prev, [pokemon]: data }));
+            loadSprite(pokemon).then(spriteData => {
+                // Ensure spriteData is defined before updating the state
+                if (spriteData) {
+                    setPoke(prev => ({ ...prev, [pokemon]: spriteData }));
+                }
             });
         });
     };
+
 
 
     const {
@@ -95,12 +89,7 @@ export default function HomePage() {
         }
     );
 
-    const [poke, setPoke] = useState({})
-    async function ss(pokemon: string) {
-        loadSprite(pokemon).then(data => {
-            setPoke(prev => ({ ...prev, [pokemon]: data }));
-        });
-    }
+    const [poke, setPoke] = useState<{ [key: string]: string }>({})
 
 
     return (
@@ -130,147 +119,14 @@ export default function HomePage() {
             {/* right part to create team */}
             <div className="w-full px-4 h-screen bg-quaternary flex items-center justify-center ">
                 {logged ?
-                    <form className="grid grid-cols-2 gap-5" onSubmit={handleSubmit(onSubmit)}>
-                        <div className="col-span-2">
-                            <Controller
-                                control={control}
-                                name="teamName"
-                                rules={{
-                                    required: 'This field is required',
-                                    maxLength: {
-                                        value: 15,
-                                        message: 'Maximum length is 15 symbols',
-                                    },
-                                }}
-                                render={({field}) => (
-                                    <input
-                                        {...field}
-                                        type="text"
-                                        placeholder="Team Name"
-                                        className=" w-full p-2 rounded"
-                                    />
-                                )}
-                            />
-                            {errors.teamName && <span className="text-red">{errors.teamName.message}</span>}
-                        </div>
-                        {/* Similar Controller wrapping for each Selector */}
-                        <div className="mb-48">
-                            <label className="text-xs">Pokemon 1</label>
-                            <Controller
-                                control={control}
-                                name="pokemon1"
-                                rules={{
-                                    required: 'This field is required',
-                                }}
-                                render={({field,}) => (
-                                    <>
-                                        <Selector
-                                            control={control}
-                                            name="pokemon1"
-                                            selectedPokemons={selectedPokemons}
-                                            onSelectPokemon={(name) => updateSelectedPokemon(0, name)}
-                                            counter="1"
-                                            field={field}
-                                        />
-                                        {errors.pokemon1 && (
-                                            <div className=" mt-1 text-red">
-                                                {errors.pokemon1.message}
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            />
-                        </div>
-                        <div className="mb-48">
-                            <label className="text-xs">Pokemon 2</label>
-                            <Controller
-                                control={control}
-                                name="pokemon2"
-                                rules={{
-                                    required: 'This field is required',
-                                }}
-                                render={({field}) => (
-                                    <>
-                                        <Selector
-                                            control={control}
-                                            name="pokemon2"
-                                            selectedPokemons={selectedPokemons}
-                                            onSelectPokemon={(name) => updateSelectedPokemon(1, name)}
-                                            counter="2"
-                                            field={field}
-                                        />
-                                        {errors.pokemon2 && (
-                                            <div className="mt-1 text-red">
-                                                {errors.pokemon2.message}
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            />
-                        </div>
-                        <div className="mb-48">
-                            <label className="text-xs">Pokemon 3</label>
-                            <Controller
-                                control={control}
-                                name="pokemon3"
-                                rules={{
-                                    required: 'This field is required',
-                                }}
-                                render={({field}) => (
-                                    <>
-                                        <Selector
-                                            control={control}
-                                            name="pokemon3"
-                                            selectedPokemons={selectedPokemons}
-                                            onSelectPokemon={(name) => updateSelectedPokemon(2, name)}
-                                            counter="3"
-                                            field={field}
-                                        />
-                                        {errors.pokemon3 && (
-                                            <div className=" mt-1 text-red">
-                                                {errors.pokemon3.message}
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            />
-                        </div>
-                        <div className="mb-48">
-                            <label className="text-xs">Pokemon 4</label>
-                            <Controller
-                                control={control}
-                                name="pokemon4"
-                                rules={{
-                                    required: 'This field is required',
-                                }}
-                                render={({field}) => (
-                                    <>
-                                        <Selector
-                                            control={control}
-                                            name="pokemon4"
-                                            selectedPokemons={selectedPokemons}
-                                            onSelectPokemon={(name) => updateSelectedPokemon(3, name)}
-                                            counter="4"
-                                            field={field}
-                                        />
-                                        {errors.pokemon4 && (
-                                            <div className="mt-1 text-red">
-                                                {errors.pokemon4.message}
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-
-                            />
-                        </div>
-
-                        <div className="col-span-2">
-                            <button type="submit"
-                                    className="w-full bg-primary text-tertiary rounded-md p-2 hover:bg-secondary transition duration-300 delay-50">
-                                Create team
-                            </button>
-                        </div>
-                    </form> :
+                    <PokeForm
+                        control={control}
+                        handleSubmit={handleSubmit}
+                        errors={errors}
+                        updateSelectedPokemon={updateSelectedPokemon}
+                        selectedPokemons={selectedPokemons}
+                        onSubmit={onSubmit}
+                    /> :
                     <div className="grid grid-cols-1 gap-5 ">
                         <h3 className="text-primary text-center font-semibold text-xl">
                             Please enter your name and surname
